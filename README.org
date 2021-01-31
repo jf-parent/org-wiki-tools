@@ -1,0 +1,18 @@
+* org-wiki-tools
+
+Help maintaining order & beauty in your org-mode-wiki
+
+** Usage
+
+#+BEGIN_SRC bash
+  $ vim config.edn
+  $ ./extract-links.sh
+  $ ./process-links.sh
+  $ ./proocess-wiki.sh
+#+END_SRC
+
+** Test
+
+#+BEGIN_SRC bash
+  $ lein test
+#+END_SRC
