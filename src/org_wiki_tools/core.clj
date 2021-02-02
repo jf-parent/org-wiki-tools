@@ -33,16 +33,13 @@
 ;; (count (filter #(nil? (:processed-at %)) (vals link-db)))
 ;; (println (filter #(= 404 (:status %)) (vals link-db)))
 
-;; TODO test w/ mock
 (defn info [& msg]
   (when print-info
     (apply println msg)))
 
-;; TODO test w/ mock
 (defn list-org-files [dir]
   (fs/glob (str dir "/*.org")))
 
-;; TODO test w/ mock
 (defn get-link-info [link]
   (merge link
          (try
@@ -57,7 +54,6 @@
       (info (str "Link: " url))
       {(str url) {:url url :status nil :processed-at nil :title title :site site}})))
 
-;; TODO test w/ mock
 (defn process-link [link]
   (info "Processing Link: " link)
   {(:url link) (merge (get-link-info link) {:processed-at (str (l/local-now))})})
@@ -130,7 +126,6 @@
        prn-str
        (spit link-db-path)))
 
-;; TODO Testing w/ Mock
 ;; TODO Autoheal link (redirect)
 ;; TODO Crontab ./extract-link.sh monthly
 ;; TODO Crontab ./process-link.sh daily
