@@ -58,13 +58,11 @@
   (info "Processing Link: " link)
   {(:url link) (merge (get-link-info link) {:processed-at (str (l/local-now))})})
 
-;; TODO test w/ mock
 (defn map-file [fn file]
   (info "Extracting link from file: " file)
   (with-open [rdr (io/reader file)]
     (doall (map fn (line-seq rdr)))))
 
-;; TODO test w/ mock
 (defn get-links [file]
   (info "Extracting link from file: " file)
   (with-open [rdr (io/reader file)]
@@ -76,10 +74,9 @@
 (defn wikiwand->wikipedia [link]
   (clojure.string/replace link #"https:\/\/www\.wikiwand\.com\/(.{2})\/(.*)" (fn [[_ l k]] (format "https://%s.wikipedia.org/wiki/%s" l k))))
 
-;; TODO test w/ mock
 (defn tag-dead-link [line]
   (if-let [[_ url _] (find-link line)]
-    (if (and (not= 200 (:status (link-db url))) (not (re-find #":dead-link:" line)))
+    (if (and (not= 200 (:status (link-db url) 200)) (not (re-find #":dead-link:" line)))
       (str line "\t\t\t" ":dead-link:")
       line)
     line))
@@ -95,12 +92,10 @@
   (let [nb (int (/ (count links) link-processing-limit))]
     (take nb (filter #(nil? (:processed-at %)) links))))
 
-;; TODO test w/ mock
 (defn extract-links [dir]
   (let [files (list-org-files dir)]
     (reset! new-link-db (into {} (map get-links files)))))
 
-;; TODO test w/ mock
 (defn process-wiki [dir]
   (let [files (list-org-files dir)]
     (doall
@@ -114,7 +109,6 @@
       files)))
   (spit "to_archive.txt" (str (clojure.string/join "\n" @link-to-archive) "\n")))
 
-;; TODO test w/ mock
 (defn process-links []
   (->> link-db
        vals

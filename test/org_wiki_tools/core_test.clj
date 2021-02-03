@@ -1,5 +1,6 @@
 (ns org-wiki-tools.core-test
   (:require [clojure.test :refer :all]
+            [clojure.java.io :as io]
             [clj-time.local :as l]
             [clj-http.client :as client]
             [me.raynes.fs :as fs]
@@ -41,6 +42,22 @@
   (with-redefs [l/local-now #(str "1970-01-01")
                 get-link-info (fn [_] (hash-map :url "https://example.com"))]
     (= (process-link {:url "https://example.com"}) {"https://example.com" {:url "https://example.com" :processed-at "1970-01-01"}})))
+
+(testing "tag-dead-link dead"
+  (with-redefs [link-db {"https://example.com" {:status 404}}]
+    (= (str "* [[https://example.com][Example]] :archive:" "\t\t\t" ":dead-link:") (tag-dead-link "* [[https://example.com][Example]] :archive:"))))
+
+(testing "tag-dead-link alive"
+  (with-redefs [link-db {"https://example.com" {:status 200}}]
+    (= (str "* [[https://example.com][Example]] :archive:") (tag-dead-link "* [[https://example.com][Example]] :archive:"))))
+
+(testing "tag-dead-link unfound"
+  (with-redefs [link-db {"https://test.com" {:status 404}}]
+    (= (str "* [[https://example.com][Example]] :archive:") (tag-dead-link "* [[https://example.com][Example]] :archive:"))))
+
+(testing "tag-dead-link already dead"
+  (with-redefs [link-db {"https://example.com" {:status 404}}]
+    (= (str "* [[https://example.com][Example]] :dead-link:") (tag-dead-link "* [[https://example.com][Example]] :dead-link:"))))
 
 ;; link->map
 (testing "link->map Normal link"
